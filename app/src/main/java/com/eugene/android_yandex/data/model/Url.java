@@ -1,4 +1,4 @@
-package com.eugene.android_yandex.model;
+package com.eugene.android_yandex.data.model;
 
 
 import com.google.gson.annotations.Expose;

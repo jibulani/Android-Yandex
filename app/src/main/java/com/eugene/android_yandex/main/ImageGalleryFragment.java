@@ -11,22 +11,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.eugene.android_yandex.App;
 import com.eugene.android_yandex.R;
-import com.eugene.android_yandex.network.UnsplashServer;
+import com.eugene.android_yandex.data.model.Photo;
+import com.eugene.android_yandex.data.source.local.AppDatabase;
+import com.eugene.android_yandex.data.source.remote.UnsplashServer;
 
 
+import java.util.List;
+
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class ImageGalleryFragment extends Fragment {
 
+    private static UnsplashServer unsplashServer;
+    private static AppDatabase appDatabase;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
-    private static UnsplashServer unsplashServer;
 
     public static ImageGalleryFragment newInstance() {
         ImageGalleryFragment imageGalleryFragment = new ImageGalleryFragment();
-        unsplashServer = new UnsplashServer();
+        unsplashServer = App.getInstance().getUnsplashServer();
+        appDatabase = App.getInstance().getAppDatabase();
         return imageGalleryFragment;
     }
 
@@ -64,16 +72,55 @@ public class ImageGalleryFragment extends Fragment {
 
         imageAdapter = getImageAdapter();
         imageAdapter.updateContext(getContext());
+        if (imageAdapter.getItemCount() == 0) {
+            updateAdapterData();
+        }
         recyclerView.setAdapter(imageAdapter);
     }
 
-    public void updateAdapterData(String clientId) {
-        unsplashServer.getPhotos(clientId)
+    public void updateAdapterDataFromNetwork() {
+        unsplashServer.getPhotos(getResources().getString(R.string.unsplash_key))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
-                    getImageAdapter().updatePhotos(photos);
+                    if (photos.size() > 0) {
+                        getImageAdapter().updatePhotos(photos);
+                        updateDbAsync(photos);
+                    }
                 });
+    }
+
+    private void updateDbAsync(List<Photo> photos) {
+        Single.fromCallable(() -> updateDb(photos))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
+    private int updateDb(List<Photo> photos) {
+        Photo[] oldPhotos = {};
+        Photo[] newPhotos = {};
+        appDatabase.getPhotoDao().deletePhotos(appDatabase.getPhotoDao()
+                .getPhotos().toArray(oldPhotos));
+        appDatabase.getPhotoDao().insertPhotos(photos.toArray(newPhotos));
+        return 0;
+    }
+
+    private void updateAdapterData() {
+        Single.fromCallable(this::getPhotosFromDb)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(photos -> {
+                    if (photos.size() > 0) {
+                        getImageAdapter().updatePhotos(photos);
+                    } else {
+                        updateAdapterDataFromNetwork();
+                    }
+                });
+    }
+
+    private List<Photo> getPhotosFromDb() {
+        return appDatabase.getPhotoDao().getPhotos();
     }
 
 }

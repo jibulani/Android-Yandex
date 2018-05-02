@@ -1,13 +1,19 @@
-package com.eugene.android_yandex.model;
+package com.eugene.android_yandex.data.model;
 
+
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
+@Entity
 public class Photo {
 
+    @NonNull
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     private String id;
@@ -17,6 +23,7 @@ public class Photo {
     @SerializedName("height")
     @Expose
     private int height;
+    @Embedded
     @SerializedName("urls")
     @Expose
     private Url urls;

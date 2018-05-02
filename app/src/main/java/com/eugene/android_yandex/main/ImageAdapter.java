@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.eugene.android_yandex.R;
 import com.eugene.android_yandex.full_photo.FullPhotoActivity;
-import com.eugene.android_yandex.model.Photo;
+import com.eugene.android_yandex.data.model.Photo;
 
 import java.util.ArrayList;
 import java.util.List;

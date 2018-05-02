@@ -1,7 +1,7 @@
-package com.eugene.android_yandex.network;
+package com.eugene.android_yandex.data.source.remote;
 
 
-import com.eugene.android_yandex.model.Photo;
+import com.eugene.android_yandex.data.model.Photo;
 
 import java.util.List;
 
