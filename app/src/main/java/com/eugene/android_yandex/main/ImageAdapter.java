@@ -2,6 +2,7 @@ package com.eugene.android_yandex.main;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.eugene.android_yandex.R;
+import com.eugene.android_yandex.full_photo.FullPhotoActivity;
 import com.eugene.android_yandex.model.Photo;
 
 import java.util.ArrayList;
@@ -71,14 +73,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
         @Override
         public void onClick(View view) {
-
             int position = getAdapterPosition();
-//            if(position != RecyclerView.NO_POSITION) {
-//                SpacePhoto spacePhoto = mSpacePhotos[position];
-//                Intent intent = new Intent(mContext, SpacePhotoActivity.class);
-//                intent.putExtra(SpacePhotoActivity.EXTRA_SPACE_PHOTO, spacePhoto);
-//                startActivity(intent);
-//            }
+            if(position != RecyclerView.NO_POSITION) {
+                Photo currPhoto = photos.get(position);
+                Intent intent = new Intent(context, FullPhotoActivity.class);
+                intent.putExtra(FullPhotoActivity.IMAGE_URL, currPhoto.getUrls().getFull());
+                context.startActivity(intent);
+            }
         }
     }
 }
