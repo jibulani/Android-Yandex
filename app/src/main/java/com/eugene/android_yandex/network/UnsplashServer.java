@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class UnsplashServer {
 
     private static final String BASE_URL = "https://api.unsplash.com/";
+    private static final int PHOTOS_COUNT = 10;
     private final Api api;
 
     public UnsplashServer() {
@@ -31,6 +32,6 @@ public class UnsplashServer {
     }
 
     public Single<List<Photo>> getPhotos(String clientId) {
-        return api.getPhotos(clientId);
+        return api.getPhotos(clientId, PHOTOS_COUNT);
     }
 }

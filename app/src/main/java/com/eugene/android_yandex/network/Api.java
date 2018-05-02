@@ -11,6 +11,6 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    @GET("photos")
-    Single<List<Photo>> getPhotos(@Query("client_id") String clientId);
+    @GET("photos/random")
+    Single<List<Photo>> getPhotos(@Query("client_id") String clientId, @Query("count") int count);
 }
