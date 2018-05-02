@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.eugene.android_yandex.main.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/images"
+    <FrameLayout
+        android:id="@+id/image_gallery"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
     <Button
         android:id="@+id/button"

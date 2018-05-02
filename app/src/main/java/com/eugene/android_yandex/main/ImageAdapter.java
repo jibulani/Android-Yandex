@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.eugene.android_yandex.R;
 import com.eugene.android_yandex.model.Photo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder>  {
@@ -19,14 +20,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private List<Photo> photos;
     private Context context;
 
-    public ImageAdapter(Context context, List<Photo> photos) {
+    public ImageAdapter(Context context) {
         this.context = context;
-        this.photos = photos;
+        this.photos = new ArrayList<>();
     }
 
     public void updatePhotos(List<Photo> photos) {
         this.photos = photos;
         notifyDataSetChanged();
+    }
+
+    public void updateContext(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         public MyViewHolder(View itemView) {
 
             super(itemView);
-            mPhotoImageView = (ImageView) itemView.findViewById(R.id.image);
+            mPhotoImageView = itemView.findViewById(R.id.image);
             itemView.setOnClickListener(this);
         }
 

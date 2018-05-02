@@ -19,34 +19,30 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private UnsplashServer unsplashServer;
+    private static final String GALLERY_FRAGMENT_TAG = "gallery_fragment";
+
     private Button button;
-    private ImageAdapter adapter;
+    private ImageGalleryFragment imageGalleryFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        unsplashServer = new UnsplashServer();
+        if (savedInstanceState == null) {
+            imageGalleryFragment = ImageGalleryFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.image_gallery, imageGalleryFragment, GALLERY_FRAGMENT_TAG)
+                    .commit();
+        } else {
+            imageGalleryFragment = (ImageGalleryFragment) getSupportFragmentManager()
+                    .findFragmentByTag(GALLERY_FRAGMENT_TAG);
+        }
         button = findViewById(R.id.button);
         button.setOnClickListener(v -> getPhotos(v.getContext().getResources()
                 .getString(R.string.unsplash_key)));
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.images);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter = new ImageAdapter(this, new ArrayList<>());
-        recyclerView.setAdapter(adapter);
     }
 
-    //TODO: remove
     private void getPhotos(String clientId) {
-        unsplashServer.getPhotos(clientId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(photos -> {
-                    adapter.updatePhotos(photos);
-                });
+            imageGalleryFragment.updateAdapterData(clientId);
     }
 }
