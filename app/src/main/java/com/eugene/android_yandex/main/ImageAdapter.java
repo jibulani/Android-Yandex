@@ -53,6 +53,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         Glide.with(context)
                 .load(photo.getUrls().getSmall())
                 .into(imageView);
+
+        //For caching full photo
+        Glide.with(context)
+                .load(photo.getUrls().getFull()).submit();
     }
 
     @Override
