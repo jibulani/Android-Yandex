@@ -2,10 +2,13 @@ package com.eugene.android_yandex.image_gallery;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.PorterDuff;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.eugene.android_yandex.R;
@@ -16,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton updateButton;
     private ImageGalleryFragment imageGalleryFragment;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,16 @@ public class MainActivity extends AppCompatActivity {
         });
         updateButton = findViewById(R.id.update_button);
         updateButton.setOnClickListener(v -> imageGalleryViewModel.loadPhotos(false));
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+        LiveData<Boolean> loadingData = imageGalleryViewModel.getIsLoadingLiveData();
+        loadingData.observe(this, isLoading -> {
+            if (isLoading != null && isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     public static ImageGalleryViewModel obtainViewModel(FragmentActivity activity) {

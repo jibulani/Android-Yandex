@@ -24,18 +24,20 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ImageGalleryViewModel extends AndroidViewModel {
 
-    private MutableLiveData<List<Photo>> photos;
-    private MutableLiveData<Boolean> isDataLoadingError;
     private final Context context;
     private final String unsplashKey;
     private static UnsplashServer unsplashServer;
     private static AppDatabase appDatabase;
+    private MutableLiveData<List<Photo>> photos;
+    private MutableLiveData<Boolean> isDataLoadingError;
+    private MutableLiveData<Boolean> isLoading;
 
     public ImageGalleryViewModel(@NonNull Application application) {
         super(application);
         photos = new MutableLiveData<>();
-        isDataLoadingError = new MutableLiveData<>();
         photos.setValue(new ArrayList<>());
+        isDataLoadingError = new MutableLiveData<>();
+        isLoading = new MutableLiveData<>();
         unsplashKey = application.getApplicationContext().getResources()
                 .getString(R.string.unsplash_key);
         context = application.getApplicationContext();
@@ -51,7 +53,12 @@ public class ImageGalleryViewModel extends AndroidViewModel {
         return isDataLoadingError;
     }
 
+    public LiveData<Boolean> getIsLoadingLiveData() {
+        return isLoading;
+    }
+
     public void loadPhotos(boolean isCacheFirst) {
+        isLoading.setValue(true);
         if (isCacheFirst) {
             getPhotosFromDbAsync();
         } else {
@@ -63,6 +70,7 @@ public class ImageGalleryViewModel extends AndroidViewModel {
         unsplashServer.getPhotos(unsplashKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(() -> isLoading.setValue(false))
                 .subscribe(
                         photos -> {
                             if (photos.size() > 0) {
@@ -97,13 +105,17 @@ public class ImageGalleryViewModel extends AndroidViewModel {
         Single.fromCallable(this::getPhotosFromDb)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(photos -> {
-                    if (photos.size() > 0) {
-                        this.photos.setValue(photos);
-                    } else {
-                        getPhotosFromNetwork();
-                    }
-                });
+                .doFinally(() -> isLoading.setValue(false))
+                .subscribe(
+                        photos -> {
+                            if (photos.size() > 0) {
+                                this.photos.setValue(photos);
+                            } else {
+                                getPhotosFromNetwork();
+                            }
+                        },
+                        throwable -> isDataLoadingError.setValue(true)
+                );
     }
 
     private List<Photo> getPhotosFromDb() {

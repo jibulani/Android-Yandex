@@ -57,10 +57,6 @@ public class ImageGalleryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(getLayoutManager());
-        recyclerView.getItemAnimator().setAddDuration(700);
-        recyclerView.getItemAnimator().setChangeDuration(700);
-        recyclerView.getItemAnimator().setMoveDuration(700);
-        recyclerView.getItemAnimator().setRemoveDuration(700);
         recyclerView.setHasFixedSize(true);
 
         imageAdapter = getImageAdapter();
@@ -70,6 +66,14 @@ public class ImageGalleryFragment extends Fragment {
         photosData.observe(this, photos -> {
             if (photos != null && !photos.isEmpty()) {
                 imageAdapter.updatePhotos(photos);
+            }
+        });
+        LiveData<Boolean> loadingData = imageGalleryViewModel.getIsLoadingLiveData();
+        loadingData.observe(this, isLoading -> {
+            if (isLoading != null && isLoading) {
+                recyclerView.setVisibility(View.INVISIBLE);
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
             }
         });
         if (imageAdapter.getItemCount() == 0) {
