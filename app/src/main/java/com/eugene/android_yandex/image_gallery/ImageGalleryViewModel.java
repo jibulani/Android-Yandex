@@ -37,6 +37,7 @@ public class ImageGalleryViewModel extends AndroidViewModel {
         photos = new MutableLiveData<>();
         photos.setValue(new ArrayList<>());
         isDataLoadingError = new MutableLiveData<>();
+        isDataLoadingError.setValue(false);
         isLoading = new MutableLiveData<>();
         unsplashKey = application.getApplicationContext().getResources()
                 .getString(R.string.unsplash_key);

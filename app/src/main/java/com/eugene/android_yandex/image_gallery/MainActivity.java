@@ -2,7 +2,6 @@ package com.eugene.android_yandex.image_gallery;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.PorterDuff;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -34,17 +33,30 @@ public class MainActivity extends AppCompatActivity {
             imageGalleryFragment = (ImageGalleryFragment) getSupportFragmentManager()
                     .findFragmentByTag(GALLERY_FRAGMENT_TAG);
         }
+        init();
+    }
+
+    public static ImageGalleryViewModel obtainViewModel(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(ImageGalleryViewModel.class);
+    }
+
+    private void init() {
         ImageGalleryViewModel imageGalleryViewModel = obtainViewModel(this);
+        updateButton = findViewById(R.id.update_button);
+        updateButton.setOnClickListener(v -> imageGalleryViewModel.loadPhotos(false));
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+        setObservers(imageGalleryViewModel);
+    }
+
+    private void setObservers(ImageGalleryViewModel imageGalleryViewModel) {
         LiveData<Boolean> errorData = imageGalleryViewModel.getLoadingErrorLiveData();
         errorData.observe(this, isDataLoadingError -> {
             if (isDataLoadingError != null && isDataLoadingError) {
                 Toast.makeText(this, "Error while loading photos", Toast.LENGTH_LONG).show();
             }
         });
-        updateButton = findViewById(R.id.update_button);
-        updateButton.setOnClickListener(v -> imageGalleryViewModel.loadPhotos(false));
-        progressBar = findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.INVISIBLE);
+
         LiveData<Boolean> loadingData = imageGalleryViewModel.getIsLoadingLiveData();
         loadingData.observe(this, isLoading -> {
             if (isLoading != null && isLoading) {
@@ -53,9 +65,5 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
-    }
-
-    public static ImageGalleryViewModel obtainViewModel(FragmentActivity activity) {
-        return ViewModelProviders.of(activity).get(ImageGalleryViewModel.class);
     }
 }

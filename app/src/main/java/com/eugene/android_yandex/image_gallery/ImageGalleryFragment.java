@@ -62,6 +62,14 @@ public class ImageGalleryFragment extends Fragment {
         imageAdapter = getImageAdapter();
         imageAdapter.updateContext(getContext());
 
+       setObservers();
+        if (imageAdapter.getItemCount() == 0) {
+            imageGalleryViewModel.loadPhotos(true);
+        }
+        recyclerView.setAdapter(imageAdapter);
+    }
+
+    private void setObservers() {
         LiveData<List<Photo>> photosData = imageGalleryViewModel.getPhotoLiveData();
         photosData.observe(this, photos -> {
             if (photos != null && !photos.isEmpty()) {
@@ -76,9 +84,5 @@ public class ImageGalleryFragment extends Fragment {
                 recyclerView.setVisibility(View.VISIBLE);
             }
         });
-        if (imageAdapter.getItemCount() == 0) {
-            imageGalleryViewModel.loadPhotos(true);
-        }
-        recyclerView.setAdapter(imageAdapter);
     }
 }
