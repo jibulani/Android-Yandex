@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.eugene.android_yandex.R;
 import com.eugene.android_yandex.full_photo.FullPhotoActivity;
 import com.eugene.android_yandex.data.model.Photo;
@@ -50,8 +51,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     public void onBindViewHolder(ImageAdapter.MyViewHolder holder, int position) {
         Photo photo = photos.get(position);
         ImageView imageView = holder.mPhotoImageView;
+        RequestOptions options = new RequestOptions().error(android.R.drawable.ic_menu_report_image);
         Glide.with(context)
                 .load(photo.getUrls().getSmall())
+                .apply(options)
                 .into(imageView);
 
         //For caching full photo

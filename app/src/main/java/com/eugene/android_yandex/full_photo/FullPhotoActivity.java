@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.eugene.android_yandex.R;
 
 public class FullPhotoActivity extends AppCompatActivity {
@@ -24,8 +25,10 @@ public class FullPhotoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             imageUrl = intent.getExtras().getString(IMAGE_URL);
+            RequestOptions options = new RequestOptions().error(android.R.drawable.ic_menu_report_image);
             Glide.with(this)
                     .load(imageUrl)
+                    .apply(options)
                     .into(imageView);
         }
 
