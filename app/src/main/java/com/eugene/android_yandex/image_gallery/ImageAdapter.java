@@ -1,4 +1,4 @@
-package com.eugene.android_yandex.main;
+package com.eugene.android_yandex.image_gallery;
 
 
 import android.content.Context;
@@ -56,7 +56,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
         //For caching full photo
         Glide.with(context)
-                .load(photo.getUrls().getFull()).submit();
+                .load(photo.getUrls().getRegular()).submit();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
             if(position != RecyclerView.NO_POSITION) {
                 Photo currPhoto = photos.get(position);
                 Intent intent = new Intent(context, FullPhotoActivity.class);
-                intent.putExtra(FullPhotoActivity.IMAGE_URL, currPhoto.getUrls().getFull());
+                intent.putExtra(FullPhotoActivity.IMAGE_URL, currPhoto.getUrls().getRegular());
                 context.startActivity(intent);
             }
         }
