@@ -5,7 +5,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
@@ -24,8 +23,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ImageGalleryViewModel extends AndroidViewModel {
 
-    private final Context context;
-    private final String unsplashKey;
     private static UnsplashServer unsplashServer;
     private static AppDatabase appDatabase;
     private MutableLiveData<List<Photo>> photos;
@@ -39,9 +36,6 @@ public class ImageGalleryViewModel extends AndroidViewModel {
         isDataLoadingError = new MutableLiveData<>();
         isDataLoadingError.setValue(false);
         isLoading = new MutableLiveData<>();
-        unsplashKey = application.getApplicationContext().getResources()
-                .getString(R.string.unsplash_key);
-        context = application.getApplicationContext();
         unsplashServer = App.getInstance().getUnsplashServer();
         appDatabase = App.getInstance().getAppDatabase();
     }
@@ -68,7 +62,7 @@ public class ImageGalleryViewModel extends AndroidViewModel {
     }
 
     private void getPhotosFromNetwork() {
-        unsplashServer.getPhotos(unsplashKey)
+        unsplashServer.getPhotos(getApplication().getApplicationContext().getResources().getString(R.string.unsplash_key))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(() -> isLoading.setValue(false))
@@ -124,7 +118,7 @@ public class ImageGalleryViewModel extends AndroidViewModel {
     }
 
     private void cleanGlideCacheAndUpdatePhotos(List<Photo> photos) {
-        Glide.get(context).clearMemory();
+        Glide.get(getApplication().getApplicationContext()).clearMemory();
         Single.fromCallable(this::cleanGlideCache)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -138,7 +132,7 @@ public class ImageGalleryViewModel extends AndroidViewModel {
     }
 
     private int cleanGlideCache() {
-        Glide.get(context).clearDiskCache();
+        Glide.get(getApplication().getApplicationContext()).clearDiskCache();
         return 0;
     }
 }
